@@ -1,10 +1,11 @@
 import React from "react";
 import styled from "styled-components";
 import MenuItem from "./MenuItem";
-import { Animated, TouchableOpacity, Dimensions } from "react-native";
+import { Animated, TouchableOpacity, Dimensions, AsyncStorage } from "react-native";
 import { Ionicons } from '@expo/vector-icons';
 import { connect } from 'react-redux';
- 
+import { TouchableWithoutFeedback } from "react-native-gesture-handler";
+
 
 function mapStateToProps(state) {
   return { action: state.action };
@@ -14,6 +15,16 @@ function mapDispatchToProps(dispatch) {
   return {
     closeMenu: () => dispatch({
       type: "CLOSE_MENU"
+    }),
+    updateName : name => 
+    dispatch({
+      type: "UPDATE_NAME",
+      name
+    }),
+    updateAvatar: avatar => 
+    dispatch ({
+      type:"UPDATE_AVATAR",
+      avatar
     })
   }
 }
@@ -55,6 +66,15 @@ class Menu extends React.Component {
         }
       };
 
+handleMenu = index => {
+  if (index === 3) {
+    this.props.closeMenu();
+    this.props.updateName("Stranger");
+    this.props.updateAvatar("https://cl.ly/55da82beb939/download/avatar-default.jpg");
+    AsyncStorage.clear();
+  }
+}
+
   render() {
 
 
@@ -81,12 +101,16 @@ class Menu extends React.Component {
             </TouchableOpacity>
             <Content>
             {items.map((item, index) => (
+              <TouchableOpacity key={index} onPress={() => {
+                this.handleMenu(index);
+              }}>
               <MenuItem
                 key={index}
                 icon={item.icon}
                 title={item.title}
                 text={item.text}
               />
+              </TouchableOpacity>
             ))}
             </Content>
       </AnimatedContainer>
